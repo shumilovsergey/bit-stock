@@ -34,21 +34,6 @@ class Message:
         response = requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", data)
         return response
     
-    def sendAudio(self, text="", keyboard={}, audio_id=None):
-        if not audio_id:
-            print("error : missing audio_id ")
-            return 
-        
-        data = {
-            'chat_id': self.chat_id, 
-            'caption': text, 
-            'audio': audio_id,
-            "reply_markup" : json.dumps(keyboard)
-        }
-        url = f'https://api.telegram.org/bot{TOKEN}/sendAudio'
-        response = requests.post(url, data=data)
-        return response
-
 
     def editMessage(self, text=" ", message_id=None, keyboard={}):
         if not message_id:
@@ -74,15 +59,7 @@ class Message:
         response = requests.post(f"https://api.telegram.org/bot{TOKEN}/deleteMessage", data)
         return response
     
-    def sendStiker(self, sticker_id):
-        data = {
-            'chat_id': self.chat_id,
-            'sticker': sticker_id
-        }
-        response = requests.post(f"https://api.telegram.org/bot{TOKEN}/sendSticker", data)
-        return response
         
-
     def callbackJson(self):
         try:
             callback_json = json.loads(self.callback)  
