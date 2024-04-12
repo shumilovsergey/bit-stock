@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import requests, json
-from server.const import TOKEN
+from server.const import TOKEN_TG
 
 @dataclass
 class Message:
@@ -31,7 +31,7 @@ class Message:
             "text": text,
             "reply_markup" : json.dumps(keyboard)
         }
-        response = requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", data)
+        response = requests.post(f"https://api.telegram.org/bot{TOKEN_TG}/sendMessage", data)
         return response
     
 
@@ -45,7 +45,7 @@ class Message:
             "message_id" : message_id,
             "reply_markup" : json.dumps(keyboard)
         }
-        response = requests.post(f"https://api.telegram.org/bot{TOKEN}/editMessageText", data)
+        response = requests.post(f"https://api.telegram.org/bot{TOKEN_TG}/editMessageText", data)
         return response
 
     def deleteMessage(self, message_id=None):
@@ -56,7 +56,7 @@ class Message:
             "chat_id": self.chat_id,
             "message_id" : message_id
         }
-        response = requests.post(f"https://api.telegram.org/bot{TOKEN}/deleteMessage", data)
+        response = requests.post(f"https://api.telegram.org/bot{TOKEN_TG}/deleteMessage", data)
         return response
     
         
