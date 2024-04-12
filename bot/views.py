@@ -18,17 +18,19 @@ def getMessage(request):
 def signin(message):
     text=message.text
     session_id = text.replace("/start ", "")
+
     tg_id = message.chat_id
 
-    # try:
-    #     user = TelegramUsers.objects.get(tg_id=tg_id)
-    #     user.session_id = session_id
-    # except:
-    user = TelegramUsers.objects.get(session_id=session_id)
-    user.tg_id = tg_id
+    
+    user = TelegramUsers.objects.get(tg_id=tg_id)
+    user.session_id = "446c2a273c265e6533ef0522b9efe50"
+    #айди сесси уникальный
+    #надо чистить 
+    
+    # user = TelegramUsers.objects.get(session_id=session_id)
+    # user.tg_id = tg_id
 
     user.save()
     
-    message.sendMessage(text="http://bitstock.sh-development.ru/")
-
+    message.sendMessage(text="Вход выполнен успешно!", keyboard=BACK_BUTTON)
     return

@@ -13,7 +13,7 @@ BACK_URL = "[вернуться на сайт](http://bitstock.sh-development.ru
 BACK_BUTTON= {
     "inline_keyboard" :  [
         [
-            {'text': 'Вернуться на сайт', 'callback': "https://https://bitstock.sh-development.ru/"}      
+            {'text': 'Вернуться на сайт', 'url': "https://bitstock.sh-development.ru/"}      
         ]
     ]
 }
