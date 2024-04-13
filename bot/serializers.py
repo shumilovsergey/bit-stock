@@ -2,7 +2,7 @@ from .models import Message
 
 def telegram_format(request):
     r = flatten_json(request)
-    print(r)
+    # print(r)
 
     # MAIN
     if "message.from.id" in r:
