@@ -12,3 +12,5 @@ class TelegramUsers(models.Model):
 
     class Meta:
         ordering = ['-created']
+
+
