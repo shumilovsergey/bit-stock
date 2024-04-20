@@ -13,28 +13,6 @@ class TelegramUsers(models.Model):
         ordering = ['-created']
 
 
-class Org(models.Model):
-    name = models.CharField(max_length=56)
-    boss =  models.ForeignKey(TelegramUsers, on_delete=models.CASCADE)
-    def __str__(self):
-        return self.name
-    class Meta:
-        ordering = ['-created']
-
-class OrgEmployees():
-    organisation = models.ForeignKey(Org, on_delete=models.CASCADE)
-    employer = models.ForeignKey(TelegramUsers, on_delete=models.CASCADE)
-    def __str__(self):
-        return self.organisation
-    class Meta:
-        ordering = ['-created']
-
-class OrgCategoris():
-    organistatin = models.ForeignKey(Org, on_delete=models.CASCADE)
-    name = models.CharField(max_length=56)
-
-
-
 # !OrgPructs
 # name
 # category

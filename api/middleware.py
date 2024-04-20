@@ -16,6 +16,7 @@ class CheckSessionMiddleware:
             return response
 
         if "auth" not in request.session:
+            request.session.clear()
             err = True
             session_id = secrets.token_hex(16)
             while err:
@@ -38,14 +39,15 @@ class CheckSessionMiddleware:
 
         elif request.session["auth"] == False:
             session_id = request.session["session_id"]
-            try:
+
+            if TelegramUsers.objects.filter(session_id=session_id).exists():
                 user = TelegramUsers.objects.get(session_id=session_id)
                 if user.tg_id != "no-auth":
                     request.session["session_id"] = session_id
                     request.session["auth"] = True
                     request.session["name"] = user.name
 
-            except:
+            else:
                 print("mid-3")
                 request.session["auth"]=None
 

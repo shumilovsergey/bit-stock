@@ -3,6 +3,8 @@ from rest_framework.decorators import api_view
 from .serializers import telegram_format
 from api.models import TelegramUsers
 from server.const import BACK_BUTTON
+from server.const import CLEAN_BUTTON
+
 @api_view(['POST'])
 def getMessage(request):
     message = telegram_format(request.data)
@@ -23,17 +25,26 @@ def signin(message, request):
     elif message.username:
         name = message.username
 
-    try:
+    if TelegramUsers.objects.filter(tg_id=tg_id).exists():
         user = TelegramUsers.objects.get(tg_id=tg_id)
         session = TelegramUsers.objects.get(session_id=session_id)
         session.delete()
         user.session_id = session_id
         user.name = name
         user.save()
-    except:
+
+    elif TelegramUsers.objects.filter(session_id=session_id).exists():
         user = TelegramUsers.objects.get(session_id=session_id)
         user.tg_id = tg_id
         user.name = name
         user.save()
+
+    else:
+        print("")
+        print("no match session with BD")
+        print("")
+        return message.sendMessage(text="Что-то пошло не так, попробуйте авторизоваться еще раз!", keyboard=CLEAN_BUTTON)
     
     return message.sendMessage(text="Вход выполнен успешно!", keyboard=BACK_BUTTON)
+
+

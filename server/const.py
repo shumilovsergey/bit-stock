@@ -17,3 +17,11 @@ BACK_BUTTON= {
         ]
     ]
 }
+
+CLEAN_BUTTON= {
+    "inline_keyboard" :  [
+        [
+            {'text': 'Вернуться на сайт', 'url': "https://bitstock.sh-development.ru/logout/"}      
+        ]
+    ]
+}
