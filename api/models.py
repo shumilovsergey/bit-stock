@@ -12,16 +12,11 @@ class TelegramUsers(models.Model):
     class Meta:
         ordering = ['-created']
 
-
-# !OrgPructs
-# name
-# category
-# description
-# photo? 
-# date_in
-# prcie_in
-# date_out
-# proce out
+class Orgs(models.Model):
+    boss = models.ForeignKey(TelegramUsers, on_delete=models.CASCADE)
+    name = models.CharField(max_length=56)
+    def __str__(self):
+        return self.name
 
 
 #

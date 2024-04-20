@@ -83,13 +83,15 @@ class SessionDebuger:
             "/",
             "/bot",
             "/login/",
-            "/logout/"
+            "/logout/",
+            "/test/"
         ]
 
         # if "/admin" not in request.path and request.path != "/" and request.path != "/login/":
         if "/admin" not in request.path and request.path not in path_exceptions:
             print(" ")
             print(f"SessionDebugerMidd redirect {request.path} to the /")
+            print("")
             return redirect("/")
 
         response = self.get_response(request)

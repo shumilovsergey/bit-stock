@@ -5,11 +5,7 @@ from .models import TelegramUsers
 
 class Main(View):
     def get(self, request):
-        
-        return render(request, 'main.html', {
-            "telegram_login_url":"/login/",
-            "telegram_logout_url":"/logout/",
-        })
+        return render(request, 'main.html')
     
 class Login(View):
     def get(self, request):

@@ -1,39 +1,16 @@
-{% load static tailwind_tags %}
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block title %}bitstock{% endblock %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>PAGE NAME</title>
-  <style>
+{% block content %}
 
-  </style>
-{% tailwind_css %}
-</head>
-
-<body class="bg-gradient-to-r from-slate-500 to-slate-700 pt-10 ">
-    <div>
-      {% if request.session.auth == True %}
-        <div class="flex justify-center items-center h-screen">
-          <div class="mr-10">Вы вошли как: {{request.session.name}}</div>
-          <form class="" action="{{ telegram_logout_url }}" method="GET">
-            <button class="text-lg text-white duration-500 hover:bg-red-600 h-20 w-48 bg-red-700 text-center rounded-3xl" type="submit">logout</button>
-          </form>
-        </div>  
-      {% else %}
-        <div class="flex justify-center items-center h-screen">
-          <div class="mr-10">Войдите в систему через телеграм</div>
-          <form class="" action="{{ telegram_login_url }}" method="GET">
-            <button class="text-lg text-white duration-500 hover:bg-green-600 h-20 w-48 bg-green-700 text-center rounded-3xl" type="submit">telegram login</button>
-          </form>
-        </div>    
-      {% endif %}
-    </div>
+{% if request.session.auth == False %}
+<div class="flex justify-center items-center h-screen">
+  <form class="" action="{{'/login/'}}" method="GET">
+    <button class="text-lg duration-500 hover:bg-zinc-500 h-20 w-48 bg-zinc-400 text-center rounded-3xl" type="submit">telegram login</button>
+  </form>
+</div> 
+{% endif %}
 
 
-</body>
-</html>
+{% endblock %}
 
