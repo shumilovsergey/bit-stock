@@ -32,6 +32,7 @@ class CheckSessionMiddleware:
             request.session["session_id"] = session_id
             request.session["auth"] = False
             request.session["name"] = "no-auth"
+            request.session["organisation_selector"] = None
             #dell all session no-auth older 1 day
             cutoff_date = timezone.now() - timezone.timedelta(days=1)
             TelegramUsers.objects.filter(created=cutoff_date, tg_id="no-auth").delete()
@@ -46,6 +47,7 @@ class CheckSessionMiddleware:
                     request.session["session_id"] = session_id
                     request.session["auth"] = True
                     request.session["name"] = user.name
+                    request.session["organisation_selector"] = None
 
             else:
                 print("mid-3")
@@ -69,13 +71,16 @@ class SessionDebuger:
         
         auth = request.session["auth"]
         session_id = request.session["session_id"]
-        user = request.session["name"] 
-
+        user = request.session["name"]
+        if "organisation_selector" not in request.session:
+            request.session["organisation_selector"] = None
+        organisation = request.session["organisation_selector"]
 
         print("##_______SESSION____##")
-        print(f"auth status - {auth}")
-        print(f"session_id  - {session_id}")
-        print(f"user name   - {user}")
+        print(f"auth status  - {auth}")
+        print(f"session_id   - {session_id}")
+        print(f"user name    - {user}")
+        print(f"ogranisation - {organisation}")
         print(" ")
         print(" ")
 
@@ -84,15 +89,14 @@ class SessionDebuger:
             "/bot",
             "/login/",
             "/logout/",
-            "/test/"
         ]
 
-        # if "/admin" not in request.path and request.path != "/" and request.path != "/login/":
-        if "/admin" not in request.path and request.path not in path_exceptions:
-            print(" ")
-            print(f"SessionDebugerMidd redirect {request.path} to the /")
-            print("")
-            return redirect("/")
+        if "auth" not in request.session and request.session["auth"]==False:
+            if "/admin" not in request.path and request.path not in path_exceptions:
+                print(" ")
+                print(f"SessionDebugerMidd redirect {request.path} to the /")
+                print("")
+                return redirect("/")
 
         response = self.get_response(request)
         return response

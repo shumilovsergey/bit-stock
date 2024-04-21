@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
-{% block title %}bitstock{% endblock %}
-
+{% block title %}
+main
+{% endblock %}
 {% block content %}
 
 {% if request.session.auth == False %}
 <div class="flex justify-center items-center h-screen">
-  <form class="" action="{{'/login/'}}" method="GET">
-    <button class="text-lg duration-500 hover:bg-zinc-500 h-20 w-48 bg-zinc-400 text-center rounded-3xl" type="submit">telegram login</button>
+  <form class="" action="{% url 'api:login' %}" method="GET">
+    <button class="text-lg duration-500 hover:bg-zinc-500 bg-zinc-400 h-20 w-48 text-center rounded-3xl" type="submit">telegram login</button>
   </form>
 </div> 
 {% endif %}
-
-
 {% endblock %}
 

@@ -7,7 +7,14 @@ SECRET_KEY = 'django-insecure-=9h+o7t6dv2yn=n03k*r7x7i^m@$dtkt0dbt@p4idpld#pfa5-
 
 DEBUG = True
 
+hosts = ["https://bitstock.sh-development.ru", "http://bitstock.sh-development.ru"]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = hosts
 ALLOWED_HOSTS = ["*"]
+CORS_ORIGINS_WHITELIST = hosts
+CSRF_ALLOWED_ORIGINS = hosts
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'rest_framework',
+    'corsheaders',
     'api.apps.ApiConfig',
 	'tailwind',
     'theme',
@@ -30,6 +38,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -97,3 +106,4 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
