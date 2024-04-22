@@ -2,7 +2,8 @@ from django.urls import path
 from .views import Main
 from .views import Login
 from .views import Logout
-from .views import Organisations
+from .views import Organisation_list
+from .views import Organisation
 
 
 app_name = 'api'
@@ -10,5 +11,6 @@ urlpatterns = [
     path('', Main.as_view(), name='main'),
     path('login/', Login.as_view(), name='login'),
     path('logout/', Logout.as_view(), name='logout'),
-    path('orgs/', Organisations.as_view(), name='orgs'),
+    path('org_list/', Organisation_list.as_view(), name='org_list'),
+    path('org/', Organisation.as_view(), name='org')
 ]

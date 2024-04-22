@@ -23,12 +23,12 @@ class Logout(View):
         request.session.clear()
         return redirect("/")
     
-class Organisations(View):
+class Organisation_list(View):
     def get(self, request):
         session_id = request.session["session_id"]
         user = TelegramUsers.objects.get(session_id=session_id)
         orgs = Orgs.objects.filter(workers=user)
-        return render(request, 'orgs.html', {"orgs":orgs})
+        return render(request, 'org_list.html', {"orgs":orgs})
     
     def post(self, request):
         org_name = request.POST["input_field"]
@@ -36,4 +36,15 @@ class Organisations(View):
         user = TelegramUsers.objects.get(session_id=session_id)
         org = Orgs.objects.create(boss_tg=user.tg_id, name=org_name)
         org.workers.add(user)
-        return redirect("/orgs/")
+        return redirect("/org_list/")
+    
+class Organisation(View):
+    def post(self, request):
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.filter(session_id=session_id)
+        org_id = request.POST["org_id"]
+        org = Orgs.objects.filter(id=org_id)
+        return render(request, 'org.html', {"org":org})
+    
+    def delete(self, request):
+        return redirect("/org_list/")
