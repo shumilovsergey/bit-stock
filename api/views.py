@@ -36,15 +36,28 @@ class Organisation_list(View):
         user = TelegramUsers.objects.get(session_id=session_id)
         org = Orgs.objects.create(boss_tg=user.tg_id, name=org_name)
         org.workers.add(user)
+        org.save()
         return redirect("/org_list/")
     
 class Organisation(View):
     def post(self, request):
-        session_id = request.session["session_id"]
-        user = TelegramUsers.objects.filter(session_id=session_id)
         org_id = request.POST["org_id"]
-        org = Orgs.objects.filter(id=org_id)
-        return render(request, 'org.html', {"org":org})
+        if Orgs.objects.filter(id=org_id):
+            org = Orgs.objects.get(id=org_id)
+            return render(request, 'org.html', {"org":org})
+        else:
+            return redirect("/org_list/")
     
-    def delete(self, request):
+class OrganisationDelete(View):
+    def post(self, request, org_id):
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
+
+        if not Orgs.objects.filter(id=org_id).exists:
+            return redirect("/org_list/")
+        
+        org = Orgs.objects.get(id=org_id)
+        if org.boss_tg == user.tg_id:
+            org.delete()
+
         return redirect("/org_list/")

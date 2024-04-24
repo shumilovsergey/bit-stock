@@ -9,15 +9,16 @@ orgs
     <div>
         <form class="" method="post">
             {% csrf_token %}
-            <input autocomplete="off" type="text" id="input_field" name="input_field" required maxlength="56" class="h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            <input autocomplete="off" placeholder="{{org.name}}" type="text" id="input_field" name="input_field" required maxlength="56" class="h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             <button type="submit" class="duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">Заменить</button>
             <label for="input_field" class="block text-sm font-medium text-zinc-300">Введите новое название организации</label>
         </form>
     </div>
 
     <div>
-        <form class="" method="delete">
-            <button name="delete_button" value="{{org.id}}" type="submit" class="duration-500 hover:bg-red-500 bg-red-400 h-10 px-4 rounded">Удалить</button>
+        <form class="" method="post" action="{% url 'api:org_del' org_id=org.id %}">
+            {% csrf_token %}
+            <button type="submit" class="duration-500 hover:bg-red-500 bg-red-400 h-10 px-4 rounded">Удалить</button>
         </form>
     </div>
 </div>
