@@ -15,43 +15,18 @@ class CheckSessionMiddleware:
             response = self.get_response(request)
             return response
 
-        if "auth" not in request.session:
-            request.session.clear()
-            err = True
-            session_id = secrets.token_hex(16)
-            while err:
-                try:
-                    TelegramUsers.objects.create(
-                        session_id=session_id,
-                        stocks_id={"id":"none"}
-                    )
-                    err=False
-                except:
-                    session_id = secrets.token_hex(16) 
-
-            request.session["session_id"] = session_id
-            request.session["auth"] = False
-            request.session["name"] = "no-auth"
-            request.session["organisation_selector"] = None
-            #dell all session no-auth older 1 day
-            cutoff_date = timezone.now() - timezone.timedelta(days=1)
-            TelegramUsers.objects.filter(created=cutoff_date, tg_id="no-auth").delete()
+        if "session_id" in request.session and TelegramUsers.objects.filter(session_id=request.session["session_id"]).exists():
+            user = TelegramUsers.objects.get(session_id=request.session["session_id"])
+            request.session["auth"] = True
+            request.session["name"] = user.name
             
-
-        elif request.session["auth"] == False:
-            session_id = request.session["session_id"]
-
-            if TelegramUsers.objects.filter(session_id=session_id).exists():
-                user = TelegramUsers.objects.get(session_id=session_id)
-                if user.tg_id != "no-auth":
-                    request.session["session_id"] = session_id
-                    request.session["auth"] = True
-                    request.session["name"] = user.name
-                    request.session["organisation_selector"] = None
-
-            else:
-                print("mid-3")
-                request.session["auth"]=None
+        else:
+            session_id = secrets.token_hex(16)
+            while TelegramUsers.objects.filter(session_id=session_id).exists():
+                session_id = secrets.token_hex(16)
+            request.session["session_id"] = session_id
+            request.session["auth"] = None
+            request.session["name"] = None
 
         response = self.get_response(request)
         return response
@@ -69,18 +44,14 @@ class SessionDebuger:
             response = self.get_response(request)
             return response
         
-        auth = request.session["auth"]
         session_id = request.session["session_id"]
-        user = request.session["name"]
-        if "organisation_selector" not in request.session:
-            request.session["organisation_selector"] = None
-        organisation = request.session["organisation_selector"]
+        auth = request.session["auth"]
+        name = request.session["name"]
 
         print("##_______SESSION____##")
-        print(f"auth status  - {auth}")
-        print(f"session_id   - {session_id}")
-        print(f"user name    - {user}")
-        print(f"ogranisation - {organisation}")
+        print(f"session_id - {session_id}")
+        print(f"auth       - {auth}")
+        print(f"name       - {name}")
         print(" ")
         print(" ")
 
@@ -91,12 +62,15 @@ class SessionDebuger:
             "/logout/",
         ]
 
-        if "auth" not in request.session and request.session["auth"]==False:
-            if "/admin" not in request.path and request.path not in path_exceptions:
-                print(" ")
-                print(f"SessionDebugerMidd redirect {request.path} to the /")
-                print("")
-                return redirect("/")
-
-        response = self.get_response(request)
-        return response
+        if request.path in path_exceptions or request.session["auth"] or "/admin" in request.path:
+            response = self.get_response(request)
+            return response
+        
+        else:
+            print(" ")
+            print("##_______REDIRECT____##")
+            print(f"SessionDebugerMidd redirect {request.path} to the /")
+            print("exception path")
+            print("")
+            print("")
+            return redirect("/")

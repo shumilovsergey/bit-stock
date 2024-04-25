@@ -19,45 +19,98 @@ class Logout(View):
         session_id = request.session["session_id"]
         if TelegramUsers.objects.filter(session_id=session_id).exists():
             user = TelegramUsers.objects.get(session_id=session_id)
-            user.delete()
-        request.session.clear()
+            user.session_id = "None"
+            user.save()
+
+        request.session["session_id"]=None
+        request.session["auth"]=None
+        request.session["name"]=None
         return redirect("/")
     
-class Organisation_list(View):
+class Organisation_List(View):
     def get(self, request):
         session_id = request.session["session_id"]
         user = TelegramUsers.objects.get(session_id=session_id)
         orgs = Orgs.objects.filter(workers=user)
         return render(request, 'org_list.html', {"orgs":orgs})
-    
-    def post(self, request):
-        org_name = request.POST["input_field"]
+       
+class Organisation_Page(View):
+    def get(self, request, org_id):
         session_id = request.session["session_id"]
         user = TelegramUsers.objects.get(session_id=session_id)
-        org = Orgs.objects.create(boss_tg=user.tg_id, name=org_name)
-        org.workers.add(user)
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        return render(request, "org_page.html", {"org":org})
+
+
+class Organisation_Edit(View):
+    def post(self, request, org_id):
+        name = request.POST["input_field"]
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+
+        org = Orgs.objects.get(id=org_id)
+        if user.tg_id != org.boss_tg:
+            info = "У вас нет прав не смену названия"
+            return render(request, 'info.html', {"info":info}) 
+        
+        org.name=name
         org.save()
-        return redirect("/org_list/")
+        return redirect('api:org_list')
     
-class Organisation(View):
-    def post(self, request):
-        org_id = request.POST["org_id"]
-        if Orgs.objects.filter(id=org_id):
-            org = Orgs.objects.get(id=org_id)
-            return render(request, 'org.html', {"org":org})
-        else:
-            return redirect("/org_list/")
-    
-class OrganisationDelete(View):
+class Organisation_Delete(View):
     def post(self, request, org_id):
         session_id = request.session["session_id"]
         user = TelegramUsers.objects.get(session_id=session_id)
 
-        if not Orgs.objects.filter(id=org_id).exists:
-            return redirect("/org_list/")
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+
+        org = Orgs.objects.get(id=org_id)
+        if user.tg_id != org.boss_tg:
+            info = "У вас нет прав не смену названия"
+            return render(request, 'info.html', {"info":info}) 
+        
+        org.delete()
+        return redirect('api:org_list')
+    
+class Organisation_Create(View):
+    def post(self, request):
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
+        name = request.POST["input_field"]
+
+        org=Orgs.objects.create(name=name, boss_tg=user.tg_id)
+        org.workers.add(user)
+        org.save()
+        return redirect('api:org_list')
+    
+class Organisation_Invite(View):
+    def get(self, request, org_id):
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
         
         org = Orgs.objects.get(id=org_id)
-        if org.boss_tg == user.tg_id:
-            org.delete()
-
-        return redirect("/org_list/")
+        if org.workers.filter(id=user.id).exists():
+            info = "Вы уже состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org.workers.add(user)
+        return redirect('api:org_list')

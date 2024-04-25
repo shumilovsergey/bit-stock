@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import telegram_format
 from api.models import TelegramUsers
+from api.models import Orgs
 from server.const import BACK_BUTTON
 from server.const import CLEAN_BUTTON
 
@@ -19,25 +20,23 @@ def signin(message, request):
     name = message.chat_id
     text=message.text
     session_id = text.replace("/start ", "")
-
     if message.first_name:
         name = message.first_name
     elif message.username:
         name = message.username
 
+
     if TelegramUsers.objects.filter(tg_id=tg_id).exists():
         user = TelegramUsers.objects.get(tg_id=tg_id)
-        session = TelegramUsers.objects.get(session_id=session_id)
-        session.delete()
         user.session_id = session_id
-        user.name = name
         user.save()
 
-    elif TelegramUsers.objects.filter(session_id=session_id).exists():
-        user = TelegramUsers.objects.get(session_id=session_id)
-        user.tg_id = tg_id
-        user.name = name
-        user.save()
+    elif not TelegramUsers.objects.filter(tg_id=tg_id).exists():
+        user=TelegramUsers.objects.create(
+            session_id=session_id,
+            tg_id=tg_id,
+            name=name
+        )
 
     else:
         print("")

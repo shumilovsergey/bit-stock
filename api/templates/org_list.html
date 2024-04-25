@@ -1,36 +1,28 @@
 {% extends 'base.html' %}
 {% block title %}
-orgs
+org list
 {% endblock %}
 {% block content %}
 {% load static %}
 
 
 <div class="">
-    <form action="{% url 'api:org' %}" method="post">
-    {% csrf_token %}
-
     {% for org in orgs %}
+    <form action="{% url 'api:org_page' org_id=org.id %}" method="get">
         <div class="flex w-1/2 mt-1 gap-10">
-            <button type="submit" name="org_id" value="{{org.id}}" class="w-56 text-left duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">{{org.name}}</button>
+            <button type="submit" class="w-56 text-left duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">{{org.name}}</button>
         </div>
-    {% endfor %}
     </form>
+    {% endfor %}
 </div>
-
 <div class="mt-10 flex w-1/2 justify-between gap-10">
-    <form class="" method="post">
+    <form action="{% url 'api:org_create' %}" method="post">
         {% csrf_token %}
         <input autocomplete="off" type="text" id="input_field" name="input_field" required maxlength="56" class="h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
         <button type="submit" class="duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">Создать</button>
         <label for="input_field" class="block text-sm font-medium text-zinc-300">Введите название организации</label>
     </form>
 </div>
-
-
-
-
-
 {% endblock %}
 
 
