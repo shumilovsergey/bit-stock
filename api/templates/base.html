@@ -22,13 +22,15 @@
                 <button class="hover:bg-zinc-500 h-10 w-40 items-center flex justify-center duration-500">Организации</button>
             </form>
 
-            <form action="" method="GET">
+            {% if request.session.org_select %}
+            <form action="{% url 'api:worker_list' %}" method="GET">
                 <button class="hover:bg-zinc-500 h-10 w-40 items-center flex justify-center duration-500">Сотрудники</button>
             </form>
 
             <form action=""" method="GET">
                 <button class="hover:bg-zinc-500 h-10 w-40 items-center flex justify-center duration-500">Склад</button>
             </form>
+            {% endif %}
 
         </div>
 

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+worker list
+{% endblock %}
+{% block content %}
+{% load static %}
+
+
+
+{% for worker in workers %}
+<div class="flex gap-10 mt-1">
+    <div class="flex bg-zinc-400 h-10 px-4 rounded w-1/3 justify-between items-center">
+        <div>{{worker.name}}</div>
+        <div>{{worker.tg_id}}</div>
+        <div>{{worker.created}}</div>
+    </div>
+
+    <div>
+        <form action="{% url 'api:worker_delete' worker_tg=worker.tg_id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="duration-500 hover:bg-red-500 bg-red-400 h-10 px-4 rounded">Уволить</button>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+
+
+{% endblock %}

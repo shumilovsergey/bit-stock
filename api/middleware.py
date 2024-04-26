@@ -27,6 +27,7 @@ class CheckSessionMiddleware:
             request.session["session_id"] = session_id
             request.session["auth"] = None
             request.session["name"] = None
+            request.session["org_select"]=None
 
         response = self.get_response(request)
         return response
@@ -47,11 +48,13 @@ class SessionDebuger:
         session_id = request.session["session_id"]
         auth = request.session["auth"]
         name = request.session["name"]
+        org_select = request.session["org_select"]
 
         print("##_______SESSION____##")
         print(f"session_id - {session_id}")
         print(f"auth       - {auth}")
         print(f"name       - {name}")
+        print(f"org_select - {org_select}")
         print(" ")
         print(" ")
 

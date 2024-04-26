@@ -6,15 +6,30 @@ org list
 {% load static %}
 
 
-<div class="">
+<div>
     {% for org in orgs %}
-    <form action="{% url 'api:org_page' org_id=org.id %}" method="get">
-        <div class="flex w-1/2 mt-1 gap-10">
-            <button type="submit" class="w-56 text-left duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">{{org.name}}</button>
-        </div>
-    </form>
+    <div class="flex gap-1">
+        <form action="{% url 'api:org_select' org_id=org.id %}" method="get">
+            {% if request.session.org_select == org.id %}
+            <button type="submit" class="duration-500 hover:bg-indigo-500 bg-indigo-400 h-10 w-10 rounded"></button>
+            {% else %}
+            <button type="submit" class="duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 w-10 rounded"></button>
+            {% endif %}
+        </form>
+
+        <form action="{% url 'api:org_page' org_id=org.id %}" method="get">
+            <div>
+                {% if request.session.org_select == org.id %}
+                <button type="submit" class="w-56 text-left duration-500 hover:bg-indigo-500 bg-indigo-400 h-10 px-4 rounded">{{org.name}}</button>
+                {% else %}
+                <button type="submit" class="w-56 text-left duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">{{org.name}}</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
     {% endfor %}
 </div>
+
 <div class="mt-10 flex w-1/2 justify-between gap-10">
     <form action="{% url 'api:org_create' %}" method="post">
         {% csrf_token %}

@@ -25,6 +25,7 @@ class Logout(View):
         request.session["session_id"]=None
         request.session["auth"]=None
         request.session["name"]=None
+        request.session["org_select"]=None
         return redirect("/")
     
 class Organisation_List(View):
@@ -81,10 +82,11 @@ class Organisation_Delete(View):
 
         org = Orgs.objects.get(id=org_id)
         if user.tg_id != org.boss_tg:
-            info = "У вас нет прав не смену названия"
+            info = "У вас нет прав на удаление"
             return render(request, 'info.html', {"info":info}) 
         
         org.delete()
+        request.session["org_select"]=None
         return redirect('api:org_list')
     
 class Organisation_Create(View):
@@ -114,3 +116,57 @@ class Organisation_Invite(View):
         
         org.workers.add(user)
         return redirect('api:org_list')
+    
+class Organisation_Select(View):
+    def get(self, request, org_id):
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        request.session["org_select"]=org.id
+        return redirect('api:org_list')
+
+class Worker_List(View):
+    def get(self, request):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        workers = org.workers.all()
+        return render(request, 'worker_list.html', {"workers":workers})
+
+class Worker_Delete(View):
+    def post(self, request, worker_tg):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if user.tg_id != org.boss_tg:
+            info = "У вас нет прав на увольнение"
+            return render(request, 'info.html', {"info":info}) 
+        
+        if user.tg_id == str(worker_tg):
+            info = "Нельзя уволить начальника организации!"
+            return render(request, 'info.html', {"info":info})
+        
+        worker = TelegramUsers.objects.get(tg_id=worker_tg)
+        org.workers.remove(worker)
+        org.save()
+        return redirect('api:worker_list')
