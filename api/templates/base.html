@@ -27,8 +27,12 @@
                 <button class="hover:bg-zinc-500 h-10 w-40 items-center flex justify-center duration-500">Сотрудники</button>
             </form>
 
+            <form action="{% url 'api:product_category_list' %}" method="GET">
+                <button class="hover:bg-zinc-500 h-10 w-40 items-center flex justify-center duration-500">Товары</button>
+            </form>
+
             <form action=""" method="GET">
-                <button class="hover:bg-zinc-500 h-10 w-40 items-center flex justify-center duration-500">Склад</button>
+                <button class="hover:bg-zinc-500 h-10 w-40 items-center flex justify-center duration-500">Сделки</button>
             </form>
             {% endif %}
 

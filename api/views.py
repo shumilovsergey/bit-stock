@@ -2,6 +2,8 @@ from django.views import View
 from django.shortcuts import render, redirect
 from .models import TelegramUsers
 from .models import Orgs
+from .models import Categories
+from .models import Products
 
 
 class Main(View):
@@ -170,3 +172,126 @@ class Worker_Delete(View):
         org.workers.remove(worker)
         org.save()
         return redirect('api:worker_list')
+    
+class Product_Categories_List(View):
+    def get(self, request):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        products = Products.objects.filter(org=org)
+        categories = Categories.objects.filter(org=org)
+        return render(request, 'product_category_list.html', {"products":products, "categories":categories})
+    
+class Category_Add(View):
+    def post(self, request):
+        category_name = request.POST["input_field"]
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+
+        Categories.objects.create(name=category_name, org=org)    
+        return redirect('api:product_category_list')
+
+class Category_Delete(View):
+    def post(self, request, category_id):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+
+        if not Categories.objects.filter(id=category_id).exists():
+            info = "Нет такой категории"
+            return render(request, 'info.html', {"info":info})
+        
+        category = Categories.objects.get(id=category_id)
+        category.delete()
+        return redirect('api:product_category_list')
+    
+class Product_Page(View):
+    def get(self, request, product_id):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+
+        if not Products.objects.filter(id=product_id).exists():
+            info = "Нет такого продукта!"
+            return render(request, 'info.html', {"info":info})
+        
+        product = Products.objects.get(id=product_id)
+        return render(request, 'product_page.html', {"product":product})
+    
+class Product_Delete(View):
+    def post(self, request, product_id):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+
+        if not Products.objects.filter(id=product_id).exists():
+            info = "Нет такого продукта!"
+            return render(request, 'info.html', {"info":info})
+        
+        product = Products.objects.get(id=product_id)
+        product.delete()
+        return redirect('api:product_category_list')
+    
+class Product_Edit(View):
+    def post(self, request, product_id):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+
+        if not Products.objects.filter(id=product_id).exists():
+            info = "Нет такого продукта!"
+            return render(request, 'info.html', {"info":info})
+        
+        product = Products.objects.get(id=product_id)
+
+        return redirect('api:product_category_list')

@@ -14,6 +14,13 @@ from .views import Organisation_Select
 from .views import Worker_List
 from .views import Worker_Delete
 
+from .views import Product_Categories_List
+from .views import Category_Add
+from .views import Category_Delete
+
+from .views import Product_Page
+from .views import Product_Delete
+from .views import Product_Edit
 
 
 app_name = 'api'
@@ -32,4 +39,14 @@ urlpatterns = [
 
     path('worker_list', Worker_List.as_view(), name='worker_list'),
     path('worker_delete/<int:worker_tg>', Worker_Delete.as_view(), name='worker_delete'),
+
+    path('product_category_list/', Product_Categories_List.as_view(), name='product_category_list'),
+    path('category_add/', Category_Add.as_view(), name='category_add'),
+    path('category_delete/<int:category_id>', Category_Delete.as_view(), name='category_delete'),
+
+    path('product/<int:product_id>', Product_Page.as_view(), name='product_page'),
+    path('product/delete/<int:product_id>', Product_Delete.as_view(), name='product_delete'),
+    path('product/edit/<int:product_id>', Product_Edit.as_view(), name='product_edit'),
 ]
+
+

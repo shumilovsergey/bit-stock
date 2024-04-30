@@ -22,9 +22,40 @@ class Orgs(models.Model):
     class Meta:
         ordering = ['-created']
 
+class Categories(models.Model):
+    name = models.CharField(max_length=56, default="no-name")
+    org = models.ForeignKey(Orgs, on_delete=models.CASCADE)
+    created = models.DateTimeField(default=timezone.now)
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ['-created']
 
+class Products(models.Model):
+    name = models.CharField(max_length=56, default="no-name")
+    org = models.ForeignKey(Orgs, on_delete=models.CASCADE)
+    description = models.TextField(default=None)
+    category = models.ForeignKey(Categories, on_delete=models.CASCADE)
+    count = models.IntegerField(default=0)
+    created = models.DateTimeField(default=timezone.now)
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ['-created']
+        
+# PRODUCTS
+# CATEGORY
+# name
+# description
+# count
 
+# CATEGORIES
+# name
 
-
-
+# DEALS
+# type
+# TELEGRAM_USER
+# PRODUCT
+# date
+# price
 
