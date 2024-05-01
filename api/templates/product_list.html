@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}
+product category list
+{% endblock %}
+{% block content %}
+{% load static %}
+
+
+<div class="flex">
+    <div class="w-3/4">
+        {% for category, products in categories.items  %}
+        <div class="mb-10">
+            <h2 class="text-white text-xl">{{ category }}:</h2>
+                {% for product in products %}
+                <form action="{% url 'api:product_page' product_id=product.id %}" method="get" class="mt-1">
+                    <button type="submit" class="w-1/2 text-left duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">{{product.name}}</button>
+                </form>
+                {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <form action="{% url 'api:product_add' %}" method="post" class="">
+        {% csrf_token %}
+        <button type="submit" class="text-left duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">Добавить</button>
+    </form>
+</div>
+
+{% endblock %}
+
+

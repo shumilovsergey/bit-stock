@@ -43,19 +43,4 @@ class Products(models.Model):
     class Meta:
         ordering = ['-created']
         
-# PRODUCTS
-# CATEGORY
-# name
-# description
-# count
-
-# CATEGORIES
-# name
-
-# DEALS
-# type
-# TELEGRAM_USER
-# PRODUCT
-# date
-# price
 
