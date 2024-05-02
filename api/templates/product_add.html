@@ -1,15 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add New Book</title>
-</head>
-<body>
-    <h1>Add New Book</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add Book</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}
+product_page
+{% endblock %}
+{% block content %}
+{% load static %}
+
+
+<form class="" method="post" action="{% url 'api:product_add'%}">
+    {% csrf_token %}
+
+    <div class="text-white">Название:</div>
+    <div class="mb-10">
+        <input autocomplete="off" type="text" name="name" class="w-1/2 h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" maxlength="56">
+    </div>
+
+    <div class="text-white">Описание:</div>
+    <div class="mb-10">
+        <textarea autocomplete="off" name="description" class="w-1/2" rows="16"></textarea>
+    </div>
+
+    <div class="text-white">Категория:</div>
+    <select name="category" class="h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required="" id="id_category">
+        <option disabled>Выберите категорию</option>
+        {% for category in category_list %}
+            {% if category.id == product.category.id %}
+                <option selected value="{{category.id}}">{{category.name}}</option>
+            {% else %}
+                <option value="{{category.id}}">{{category.name}}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+    <div autocomplete="off" class="text-white">Количество:</div>
+    <div class="mb-10">
+        <input type="number" value="1" name="count" class="w-20 h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+    </div>
+    <button type="submit" class="text-left duration-500 hover:bg-zinc-500 bg-zinc-400 h-10 px-4 rounded">Сохранить</button>
+
+</form>
+
+
+
+{% endblock %}

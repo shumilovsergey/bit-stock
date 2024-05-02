@@ -24,6 +24,7 @@ from .views import Product_Edit
 from .views import Product_List
 from .views import Product_Add
 
+
 app_name = 'api'
 urlpatterns = [
     path('', Main.as_view(), name='main'),

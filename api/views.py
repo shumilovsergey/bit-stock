@@ -4,8 +4,6 @@ from .models import TelegramUsers
 from .models import Orgs
 from .models import Categories
 from .models import Products
-from .forms import ProductForm
-from django.urls import reverse_lazy
 
 class Main(View):
     def get(self, request):
@@ -206,6 +204,12 @@ class Category_Add(View):
             info = "Вы не состоите в этой организации"
             return render(request, 'info.html', {"info":info})
 
+        category_list = Categories.objects.filter(org=org_id)
+        for c in category_list:
+            if category_name.lower() == c.name.lower():
+                info = "У вас уже есть такая категория"
+                return render(request, 'info.html', {"info":info})
+
         Categories.objects.create(name=category_name, org=org)    
         return redirect('api:category_list')
 
@@ -213,6 +217,7 @@ class Category_Delete(View):
     def post(self, request, category_id):
         org_id = request.session["org_select"]
         session_id = request.session["session_id"]
+        user = TelegramUsers.objects.get(session_id=session_id)
 
         if not Orgs.objects.filter(id=org_id).exists():
             info = "Нет такой организации"
@@ -222,6 +227,10 @@ class Category_Delete(View):
         if not org.workers.filter(session_id=session_id).exists():
             info = "Вы не состоите в этой организации"
             return render(request, 'info.html', {"info":info})
+        
+        if user.tg_id != org.boss_tg:
+            info = "У вас нет прав на удаление"
+            return render(request, 'info.html', {"info":info}) 
 
         if not Categories.objects.filter(id=category_id).exists():
             info = "Нет такой категории"
@@ -273,8 +282,9 @@ class Product_Page(View):
             info = "Нет такого продукта!"
             return render(request, 'info.html', {"info":info})
         
-        product = Products.objects.get(id=product_id)
-        return render(request, 'product_page.html', {"product":product})
+        product=Products.objects.get(id=product_id)
+        category_list = Categories.objects.filter(org=org_id)
+        return render(request, 'product_page.html', {"category_list":category_list, "product":product})
     
 class Product_Delete(View):
     def post(self, request, product_id):
@@ -316,18 +326,64 @@ class Product_Edit(View):
             info = "Нет такого продукта!"
             return render(request, 'info.html', {"info":info})
         
-        product = Products.objects.get(id=product_id)
 
-        return redirect('api:product_list')
+        try:
+            product = Products.objects.get(id=product_id)
+            product.name=request.POST["name"]
+            product.description=request.POST["description"]
+            category = Categories.objects.get(id=int(request.POST["category"]))
+            product.category=category
+            product.count=request.POST["count"]
+            product.save()
+            return redirect('api:product_list')
+        
+        except:
+            info = "Ошибка записи"
+            return render(request, 'info.html', {"info":info})
+        
     
 class Product_Add(View):
-    model = Products
-    form_class = ProductForm
-    template_name = 'product_add.html'
-    success_url = reverse_lazy('product_list')  # Redirect to the books list page after saving
+    def get(self, request):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
 
-    # Optionally, you can add methods to customize the behavior further, such as:
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        return super().form_valid(form)
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        category_list = Categories.objects.filter(org=org_id)
+        return render(request, 'product_add.html', {"category_list":category_list})
+
+    def post(self, request):
+        org_id = request.session["org_select"]
+        session_id = request.session["session_id"]
+
+        if not Orgs.objects.filter(id=org_id).exists():
+            info = "Нет такой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        org = Orgs.objects.get(id=org_id)
+        if not org.workers.filter(session_id=session_id).exists():
+            info = "Вы не состоите в этой организации"
+            return render(request, 'info.html', {"info":info})
+        
+        try:
+            category = Categories.objects.get(id=int(request.POST["category"]))
+            Products.objects.create(
+                name=request.POST["name"],
+                description=request.POST["description"],
+                category=category,
+                count=request.POST["count"],
+                org=org
+            )
+
+            return redirect('api:product_list')
+        
+        except:
+            info = "Ошибка записи"
+            return render(request, 'info.html', {"info":info})
