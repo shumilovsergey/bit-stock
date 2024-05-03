@@ -229,7 +229,7 @@ class Category_Delete(View):
             return render(request, 'info.html', {"info":info})
         
         if user.tg_id != org.boss_tg:
-            info = "У вас нет прав на удаление"
+            info = "У вас нет прав на удаление категорий!"
             return render(request, 'info.html', {"info":info}) 
 
         if not Categories.objects.filter(id=category_id).exists():
@@ -304,6 +304,11 @@ class Product_Delete(View):
             info = "Нет такого продукта!"
             return render(request, 'info.html', {"info":info})
         
+        user = TelegramUsers.objects.get(session_id=session_id)
+        if user.tg_id != org.boss_tg:
+            info = "У вас нет прав на удаление карточки товара"
+            return render(request, 'info.html', {"info":info}) 
+        
         product = Products.objects.get(id=product_id)
         product.delete()
         return redirect('api:product_list')
@@ -326,9 +331,12 @@ class Product_Edit(View):
             info = "Нет такого продукта!"
             return render(request, 'info.html', {"info":info})
         
-
+        product = Products.objects.get(id=product_id)
+        if product.count != request.POST["count"]:
+            info = "Сотрудник может менять количество товаров только через сделки!"
+            return render(request, 'info.html', {"info":info})
+        
         try:
-            product = Products.objects.get(id=product_id)
             product.name=request.POST["name"]
             product.description=request.POST["description"]
             category = Categories.objects.get(id=int(request.POST["category"]))
@@ -378,7 +386,7 @@ class Product_Add(View):
                 name=request.POST["name"],
                 description=request.POST["description"],
                 category=category,
-                count=request.POST["count"],
+                count=0,
                 org=org
             )
 
@@ -387,3 +395,5 @@ class Product_Add(View):
         except:
             info = "Ошибка записи"
             return render(request, 'info.html', {"info":info})
+        
+
